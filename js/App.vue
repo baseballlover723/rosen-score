@@ -17,159 +17,275 @@
             class="my-8 bg-indigo-100 border border-indigo-200 drop-shadow-2xl mx-auto p-4 rounded-lg shadow-indigo-500/50 shadow-lg text-sky-600 md:w-1/2"
             v-if="!isDownloading && !reportObject.data"
         >
-            <form @submit.prevent="startDownload">
-                <div class="flex flex-row mb-4">
-                    <div class="basis-1/4 text-2xl md:text-5xl text-center font-bold italic">
-                        1
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="inline h-8 w-8"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M17 8l4 4m0 0l-4 4m4-4H3"
-                            />
-                        </svg>
-                    </div>
-                    <div class="basis-3/4">
-                        Enter Lichess.org username or arena URL:
+            <tabs :options="{ useUrlFragment: false }" @changed="tabChanged">
+                <tab name="Chess.com">
+                    <form @submit.prevent="startDownload">
+                        <div class="flex flex-row mb-4">
+                            <div class="basis-1/4 text-2xl md:text-5xl text-center font-bold italic">
+                                1
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="inline h-8 w-8"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                                    />
+                                </svg>
+                            </div>
+                            <div class="basis-3/4">
+                                Enter Chess.com username:
 
-                        <input
-                            type="text"
-                            class="block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                            placeholder="Lichess username or arena URL here"
-                            spellcheck="false"
-                            v-model="formInputValue"
-                            @change="formInputValueEntered"
-                        />
-
-                        <div class="text-sm">
-                            Or
-                            <span
-                                class="dotted-underline text-sky-900 cursor-pointer"
-                                @click.prevent="formFill('EricRosen')"
-                            >
-                                click here to see EricRosen's
-                            </span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex flex-row mb-4">
-                    <div class="basis-1/4 text-2xl md:text-5xl text-center font-bold italic">
-                        2
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="inline h-8 w-8"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M17 8l4 4m0 0l-4 4m4-4H3"
-                            />
-                        </svg>
-                    </div>
-                    <div class="basis-3/4">
-                        <lichess-login v-on:set-lichess-oauth-token="setLichessOauthToken"></lichess-login>
-                    </div>
-                </div>
-
-                <div class="flex flex-row">
-                    <div class="basis-1/4 text-2xl md:text-5xl text-center font-bold italic">
-                        3
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="inline h-8 w-8"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M17 8l4 4m0 0l-4 4m4-4H3"
-                            />
-                        </svg>
-                    </div>
-                    <div class="basis-3/4">
-                        <div class="text-sm mt-1 mb-2" v-if="!formInputValue.includes('lichess.org')">
-                            Check games since
-                            <select v-model.number="filter.sinceHoursAgo"
-                                class="bg-transparent border-b border-dotted border-sky-900 focus:outline-0 hover:border-dashed text-sky-900 md:w-28"
-                            >
-                                <option :value="6">6 hours ago</option>
-                                <option :value="24">yesterday</option>
-                                <option :value="24*7">last week</option>
-                                <option :value="24*31">last month</option>
-                                <option :value="0">forever</option>
-                            </select>
-                        </div>
-
-                        <button
-                            type="submit"
-                            class="px-6 py-2.5 bg-green-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-600 hover:shadow-lg focus:bg-green-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-700 active:shadow-lg transition duration-150 ease-in-out"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="inline h-6 w-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                <input
+                                    type="text"
+                                    class="block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                                    placeholder="Chess.com Username Here"
+                                    spellcheck="false"
+                                    v-model="formInputValue"
+                                    @blur="formInputValueEntered"
                                 />
-                            </svg>
-                            Click here to analyze
-                        </button>
-
-                        <div v-if="errorMsg" class="mt-2 font-bold text-red-500">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                class="inline h-6 w-6"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                                />
-                            </svg>
-                            {{ errorMsg }}
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </form>
+                        <div class="flex flex-row mb-4">
+                            <div class="basis-1/4 text-2xl md:text-5xl text-center font-bold italic">
+                                2
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="inline h-8 w-8"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                                    />
+                                </svg>
+                            </div>
+                            <div class="basis-3/4">
+                                <button
+                                    type="submit"
+                                    class="px-6 py-2.5 bg-green-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-600 hover:shadow-lg focus:bg-green-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-700 active:shadow-lg transition duration-150 ease-in-out"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="inline h-6 w-6"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                        />
+                                    </svg>
+                                    Click here to analyze
+                                </button>
 
+                                <div v-if="errorMsg" class="mt-2 font-bold text-red-500">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="inline h-6 w-6"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                        />
+                                    </svg>
+                                    {{ errorMsg }}
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </tab>
+                <tab name="Lichess.org">
+                    <form @submit.prevent="startDownload">
+                        <div class="flex flex-row mb-4">
+                            <div class="basis-1/4 text-2xl md:text-5xl text-center font-bold italic">
+                                1
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="inline h-8 w-8"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                                    />
+                                </svg>
+                            </div>
+                            <div class="basis-3/4">
+                                Enter Lichess.org username or arena URL:
+
+                                <input
+                                    type="text"
+                                    class="block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                                    placeholder="Lichess username or arena URL here"
+                                    spellcheck="false"
+                                    v-model="formInputValue"
+                                    @change="formInputValueEntered"
+                                />
+
+                                <div class="text-sm">
+                                    Or
+                                    <span
+                                        class="dotted-underline text-sky-900 cursor-pointer"
+                                        @click.prevent="formFill('EricRosen')"
+                                    >
+                                        click here to see EricRosen's
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row mb-4">
+                            <div class="basis-1/4 text-2xl md:text-5xl text-center font-bold italic">
+                                2
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="inline h-8 w-8"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                                    />
+                                </svg>
+                            </div>
+                            <div class="basis-3/4">
+                                <lichess-login v-on:set-lichess-oauth-token="setLichessOauthToken"></lichess-login>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row">
+                            <div class="basis-1/4 text-2xl md:text-5xl text-center font-bold italic">
+                                3
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="inline h-8 w-8"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M17 8l4 4m0 0l-4 4m4-4H3"
+                                    />
+                                </svg>
+                            </div>
+                            <div class="basis-3/4">
+                                <div class="text-sm mt-1 mb-2" v-if="!formInputValue.includes('lichess.org')">
+                                    Check games since
+                                    <select
+                                        v-model.number="filter.sinceHoursAgo"
+                                        class="bg-transparent border-b border-dotted border-sky-900 focus:outline-0 hover:border-dashed text-sky-900 md:w-28"
+                                    >
+                                        <option :value="6">6 hours ago</option>
+                                        <option :value="24">yesterday</option>
+                                        <option :value="24 * 7">last week</option>
+                                        <option :value="24 * 31">last month</option>
+                                        <option :value="0">forever</option>
+                                    </select>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    class="px-6 py-2.5 bg-green-500 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-green-600 hover:shadow-lg focus:bg-green-600 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green-700 active:shadow-lg transition duration-150 ease-in-out"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="inline h-6 w-6"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                        />
+                                    </svg>
+                                    Click here to analyze
+                                </button>
+
+                                <div v-if="errorMsg" class="mt-2 font-bold text-red-500">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="inline h-6 w-6"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                        />
+                                    </svg>
+                                    {{ errorMsg }}
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </tab>
+            </tabs>
             <div class="border-t border-gray-300 mt-4 text-bold font-bold pt-2">Recent Updates</div>
             <ul class="text-sm">
                 <li>
                     <changelog-date :year="2022" :month="5" :day="20"></changelog-date>
-                    - Added <a href="https://lichess.org/Ak0Bhmx8/black#46" target="_blank" class="dotted-underline text-sky-900 cursor-pointer">"Solid Pawn Diamond" trophy</a>
+                    - Added
+                    <a
+                        href="https://lichess.org/Ak0Bhmx8/black#46"
+                        target="_blank"
+                        class="dotted-underline text-sky-900 cursor-pointer"
+                        >"Solid Pawn Diamond" trophy</a
+                    >
                 </li>
                 <li>
                     <changelog-date :year="2022" :month="5" :day="8"></changelog-date>
-                    - Added <a href="https://lichess.org/OtlF3AfG#27" target="_blank" class="dotted-underline text-sky-900 cursor-pointer">"Double-Check Checkmate" trophy</a>
+                    - Added
+                    <a
+                        href="https://lichess.org/OtlF3AfG#27"
+                        target="_blank"
+                        class="dotted-underline text-sky-900 cursor-pointer"
+                        >"Double-Check Checkmate" trophy</a
+                    >
                 </li>
                 <li>
                     <changelog-date :year="2022" :month="5" :day="5"></changelog-date>
-                    - Added <a href="https://twitter.com/lichess/status/1521874769288876033" target="_blank" class="dotted-underline text-sky-900 cursor-pointer">Adoption Match trophies</a>
+                    - Added
+                    <a
+                        href="https://twitter.com/lichess/status/1521874769288876033"
+                        target="_blank"
+                        class="dotted-underline text-sky-900 cursor-pointer"
+                        >Adoption Match trophies</a
+                    >
                 </li>
                 <li>
                     <changelog-date :year="2022" :month="4" :day="15"></changelog-date>
@@ -220,9 +336,7 @@
                 {{ totalAccomplishmentsPossible }})
             </div>
 
-            <div class="mb-1" v-if="sinceDateFormatted">
-                since {{ sinceDateFormatted }}
-            </div>
+            <div class="mb-1" v-if="sinceDateFormatted">since {{ sinceDateFormatted }}</div>
 
             <trophy-collection :count="trophyCount" size="large"></trophy-collection>
 
@@ -730,8 +844,10 @@
 <script>
 import readStream from './browser-ndjson-stream-reader.js'
 import { Chess as ChessJS } from 'chess.js'
+import { ChessWebApi } from 'chess-web-api'
 
 import alphabetOpeningSearch from './utils/alphabet-opening-search.js'
+import chessDotComUtils from './utils/chess-dot-com.js'
 import cleanupLichessUsername from './utils/cleanup-lichess-username.js'
 import fenToPosition from './utils/fen-to-position.js'
 import formatSinceDate from './utils/format-since-date.js'
@@ -788,6 +904,7 @@ export default {
         return {
             lichessOauthToken: null,
 
+            gamesOrigin: '',
             formInputValue: '',
             filter: {},
             reportObject: {},
@@ -811,7 +928,7 @@ export default {
         sinceTimestamp: function () {
             if (this.filter.sinceHoursAgo) {
                 let now = new Date().getTime()
-                return now - (this.filter.sinceHoursAgo * 60 * 60 * 1000)
+                return now - this.filter.sinceHoursAgo * 60 * 60 * 1000
             }
         },
 
@@ -832,8 +949,7 @@ export default {
         trophyCount: function () {
             return Object.values(this.pointsByAccomplishment)
                 .map((o) => Object.values(o))
-                .flat()
-                .length
+                .flat().length
         },
 
         lichessOauthTokenString: function () {
@@ -855,7 +971,7 @@ export default {
 
     watch: {
         filter: {
-            handler: function(value) {
+            handler: function (value) {
                 window.sessionStorage.setItem('savedFilter', JSON.stringify(value))
             },
             deep: true,
@@ -896,19 +1012,114 @@ export default {
         },
 
         fetchJsonEndpoint: function (url) {
+            console.log('fetching ' + url)
+            const headers = {}
+            switch (this.gamesOrigin) {
+                case 'Lichess.org':
+                    headers['Authorization'] = `Bearer ${this.lichessOauthTokenString}`
+                    break
+            }
             return fetch(url, {
-                headers: {
-                    Authorization: `Bearer ${this.lichessOauthTokenString}`,
-                },
+                headers: headers,
             }).then((response) => response.json())
         },
 
+        tabChanged(selectedTab) {
+            this.gamesOrigin = selectedTab.tab.name
+        },
+
         startDownload: function () {
-            if (! this.formInputValue) {
+            if (!this.formInputValue) {
                 this.errorMsg = 'Enter a username or arena URL in Step #1'
                 return
             }
+            console.log('starting download')
+            console.log('website: ' + this.gamesOrigin)
+            switch (this.gamesOrigin) {
+                case 'Lichess.org':
+                    this.startDownloadLichess()
+                    break
+                case 'Chess.com':
+                    this.startDownloadChessDotCom()
+                    break
+            }
+        },
 
+        startDownloadChessDotCom: function () {
+            console.log('downloading from chess.com')
+            // User
+            this.reportObject.type = 'user'
+
+            this.fetchJsonEndpoint(`https://api.chess.com/pub/player/${this.formInputValue}/stats`)
+                // this.fetchJsonEndpoint(`https://www.chess.com/callback/member/stats/${this.formInputValue}`) // cors error, but includes unrated games
+                .then(
+                    async function (data) {
+                        console.log('stats data', data)
+                        const countGames = function (obj) {
+                            if (obj) {
+                                const numbGames = obj.record.win + obj.record.draw + obj.record.loss
+                                console.log('numbGames', numbGames)
+                                return numbGames
+                            }
+                            return 0
+                        }
+                        this.counts.totalGames =
+                            countGames(data.chess_bullet) +
+                            countGames(data.chess_blitz) +
+                            countGames(data.chess_rapid) +
+                            countGames(data.chess_daily)
+                        console.log('total games: ' + this.counts.totalGames)
+                        this.reportObject.data = data
+
+                        window.document.title = `${window.document.title} - ${this.formInputValue}`
+                        this.fetchChessDotComGames(this.formInputValue)
+                    }.bind(this)
+                )
+                .catch((e) => {
+                    this.errorMsg = 'Chess.com user not found'
+                })
+        },
+
+        // TODO unrated games aren't counted in the public api stats page
+        // perhaps we should grab all the archives, and then start processing them?
+        // TODO fix the links
+        // TODO fix the other stuff?
+        fetchChessDotComGames: function (username) {
+            this.isDownloading = true
+            this.fetchJsonEndpoint(`https://api.chess.com/pub/player/${username}/games/archives`)
+                .then(
+                    async function (data) {
+                        console.log('archive data', data)
+                        // this.reportObject.data = data
+                        for (const url of data.archives.reverse()) {
+                            // for (const url of data.archives.reverse().slice(0, 1)) { // DEBUG SLICE
+                            console.log('url: ' + url)
+                            await this.fetchJsonEndpoint(url)
+                                .then(
+                                    async function (data) {
+                                        console.log('games data ' + url, data)
+                                        for (const game of data.games) {
+                                            this.processChessDotComGame(chessDotComUtils.convertToLichess(game))
+                                        }
+                                    }.bind(this)
+                                )
+                                .catch((e) => {
+                                    this.errorMsg = 'Chess.com archive not found'
+                                })
+                        }
+                        console.log('done loading chess.com games')
+
+                        // let url = `https://api.chess.com/pub/player/${this.formInputValue}/games/archives`
+                        // this.fetchGames(url)
+                    }.bind(this)
+                )
+                .catch((e) => {
+                    this.errorMsg = 'Chess.com archives not found'
+                })
+        },
+
+        startDownloadLichess: function () {
+            console.log('downloading from lichess.org')
             if (this.formInputValue.includes('/tournament/')) {
                 // Arena tournament
                 this.reportObject.type = 'arena'
@@ -1064,7 +1275,7 @@ export default {
 
         checkForAccomplishment: function (color, label, game, onMoveNumber) {
             if (typeof color === 'object') {
-                for(const c of color) {
+                for (const c of color) {
                     this.addTrophyForColor(c, label, game, onMoveNumber)
                 }
             } else if (color) {
@@ -1214,7 +1425,12 @@ export default {
                 )
 
                 this.checkForAccomplishment(pieceStructures.pawnDiamond(position), 'pawnDiamond', gameInfoJson, move)
-                this.checkForAccomplishment(pieceStructures.pawnDiamondSolid(position), 'pawnDiamondSolid', gameInfoJson, move)
+                this.checkForAccomplishment(
+                    pieceStructures.pawnDiamondSolid(position),
+                    'pawnDiamondSolid',
+                    gameInfoJson,
+                    move
+                )
 
                 this.checkForAccomplishment(pieceStructures.knightCube(position), 'knightCube', gameInfoJson, move)
                 this.checkForAccomplishment(
@@ -1270,28 +1486,12 @@ export default {
                     move
                 )
 
-                this.checkForAccomplishment(
-                    megaFork(chessJS, moveInfo, gameInfoJson),
-                    'megaFork',
-                    gameInfoJson,
-                    move
-                )
+                this.checkForAccomplishment(megaFork(chessJS, moveInfo, gameInfoJson), 'megaFork', gameInfoJson, move)
             }
 
-            for (let word of [
-                'badegg',
-                'beachcafe',
-                'beef',
-                'cabbage',
-                'chad',
-                'egg',
-                'eggegg',
-                'headache',
-            ]) {
+            for (let word of ['badegg', 'beachcafe', 'beef', 'cabbage', 'chad', 'egg', 'eggegg', 'headache']) {
                 this.checkForAccomplishment(
-                    alphabetOpenings
-                        .checkWord(word, moves)
-                        .filter(color => gameInfoJson.winner === color),
+                    alphabetOpenings.checkWord(word, moves).filter((color) => gameInfoJson.winner === color),
                     `alphabet:${word}`,
                     gameInfoJson
                 )
@@ -1346,15 +1546,6 @@ export default {
             }
 
             this.checkForAccomplishment(
-                rosenTrap(gameInfoJson, allMoves),
-                'rosenTrap',
-                gameInfoJson,
-                allMoves.length
-            )
-
-            this.checkForAccomplishment(lefongTrap(allMoves), 'lefongTrap', gameInfoJson)
-
-            this.checkForAccomplishment(
                 dirtyWins.winInsufficientMaterial(gameInfoJson, position),
                 'winInsufficientMaterial',
                 gameInfoJson,
@@ -1367,6 +1558,13 @@ export default {
                 gameInfoJson,
                 allMoves.length
             )
+
+            // if (windmill(allMoves)) {
+            //     console.log('windmill found',
+            //         gameInfoJson.id,
+            //         gameInfoJson
+            //     )
+            // }
 
             this.checkForAccomplishment(castleFork(allMoves), 'castleFork', gameInfoJson)
 
@@ -1402,20 +1600,6 @@ export default {
                 )
             }
 
-            adoptionMatch.processGame(gameInfoJson)
-
-            this.checkForAccomplishment(
-                adoptionMatch.checkForAdoption(gameInfoJson, 10),
-                'adoptionMatch:10',
-                gameInfoJson
-            )
-
-            this.checkForAccomplishment(
-                adoptionMatch.checkForAdoption(gameInfoJson, 20),
-                'adoptionMatch:20',
-                gameInfoJson
-            )
-
             if (gameInfoJson.status === 'mate') {
                 let numberOfMovesForWinningSide = Math.ceil(moves.length / 2)
 
@@ -1427,6 +1611,15 @@ export default {
                     this.addTrophyForColor(gameInfoJson.winner, 'quickCheckmate:4', gameInfoJson)
                 }
             }
+        },
+
+        processChessDotComGame: function (gameInfoJson) {
+            // stats page doesn't include unrated games
+            if (!gameInfoJson.rated) {
+                return
+            }
+
+            this.processGame(gameInfoJson)
         },
 
         getCacheUpdateCommand: function () {
